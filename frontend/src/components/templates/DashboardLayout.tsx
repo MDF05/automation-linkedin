@@ -11,6 +11,8 @@ import {
   History,
   Settings,
 } from 'lucide-react';
+import { DeviceStatusBar } from '../organisms/DeviceStatusBar';
+import { useDeviceStatus } from '../../hooks/useDeviceStatus';
 
 interface NavItem {
   href: string;
@@ -35,6 +37,7 @@ export interface DashboardLayoutProps {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) => {
   const router = useRouter();
+  const deviceStatus = useDeviceStatus();
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
@@ -75,11 +78,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, titl
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        {title && (
-          <header className="flex h-14 flex-shrink-0 items-center border-b border-gray-200 bg-white px-6">
-            <h1 className="text-base font-semibold text-gray-900">{title}</h1>
-          </header>
-        )}
+        <header className="flex h-14 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6 gap-4">
+          {title && <h1 className="text-base font-semibold text-gray-900">{title}</h1>}
+          <div className="ml-auto w-72">
+            <DeviceStatusBar status={deviceStatus} />
+          </div>
+        </header>
 
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>

@@ -343,9 +343,9 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
     - `ScheduleItem.tsx` — item jadwal dengan toggle aktif/nonaktif
     - `StatCard.tsx` — card statistik dengan angka besar dan label
     - _Requirements: 2.6, 5.10, 7.3_
-- [-] 21. Frontend — Organisms & Templates
+- [x] 21. Frontend — Organisms & Templates
 
-  - [ ] 21.1 Buat organisms di `frontend/src/components/organisms/`
+  - [x] 21.1 Buat organisms di `frontend/src/components/organisms/`
     - `ContentForm.tsx` — form lengkap untuk generate konten (Requirements 2.1)
     - `PromoForm.tsx` — form untuk generate konten promosi (Requirements 3.1)
     - `JobCriteriaForm.tsx` — form kriteria job hunting (Requirements 5.1)
@@ -355,13 +355,13 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
     - `AIUsageChart.tsx` — chart penggunaan AI per provider (Requirements 8.2)
     - `DeviceStatusBar.tsx` — bar status HP dengan StatusDot dan tombol reconnect (Requirements 1.5)
     - _Requirements: 2.1, 3.1, 5.1, 6.1, 7.3, 8.2, 10.3_
-  - [~] 21.2 Buat templates di `frontend/src/components/templates/`
+  - [x] 21.2 Buat templates di `frontend/src/components/templates/`
     - `DashboardLayout.tsx` — sidebar navigasi + main content area + DeviceStatusBar
     - `StudioLayout.tsx` — dua kolom: form kiri + preview kanan
     - _Requirements: semua halaman_
-- [ ] 22. Frontend — Pages & Hooks
+- [-] 22. Frontend — Pages & Hooks
 
-  - [~] 22.1 Buat `frontend/src/hooks/`
+  - [ ] 22.1 Buat `frontend/src/hooks/`
 
     - `useWebSocket.ts` — koneksi ke `/ws`, handle reconnect, expose event stream
     - `useDeviceStatus.ts` — subscribe device_status events dari WebSocket
