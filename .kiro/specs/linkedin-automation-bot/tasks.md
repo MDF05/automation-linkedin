@@ -164,7 +164,7 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
 
   - Pastikan semua service dapat diinstansiasi tanpa error, semua unit test service pass.
   - Pastikan semua test pass, tanya user jika ada pertanyaan.
-- [ ] 11. Module A — Content Posting Bot
+- [x] 11. Module A — Content Posting Bot
 
   - [x] 11.1 Buat `backend/app/services/content_generator.py`
     - `generate_content(topic, description, content_type, tone, length)` → list of 3 variasi
@@ -359,45 +359,45 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
     - `DashboardLayout.tsx` — sidebar navigasi + main content area + DeviceStatusBar
     - `StudioLayout.tsx` — dua kolom: form kiri + preview kanan
     - _Requirements: semua halaman_
-- [-] 22. Frontend — Pages & Hooks
+- [x] 22. Frontend — Pages & Hooks
 
-  - [ ] 22.1 Buat `frontend/src/hooks/`
+  - [x] 22.1 Buat `frontend/src/hooks/`
 
     - `useWebSocket.ts` — koneksi ke `/ws`, handle reconnect, expose event stream
     - `useDeviceStatus.ts` — subscribe device_status events dari WebSocket
     - `useBotProgress.ts` — subscribe bot_progress events, expose progress state
     - `useApiMutation.ts` — wrapper fetch untuk POST/PUT/DELETE dengan loading/error state
     - _Requirements: 1.5, 2.10_
-  - [~] 22.2 Buat `frontend/src/pages/index.tsx` — halaman Dashboard Overview
+  - [x] 22.2 Buat `frontend/src/pages/index.tsx` — halaman Dashboard Overview
 
     - StatCard untuk: total posts, total interaksi, total aplikasi kerja, status HP
     - Grafik aktivitas mingguan (Requirements 5.10, 7.3)
     - _Requirements: 5.10, 7.3_
-  - [~] 22.3 Buat `frontend/src/pages/studio.tsx` — halaman Studio (Module A & B)
+  - [x] 22.3 Buat `frontend/src/pages/studio.tsx` — halaman Studio (Module A & B)
 
     - Tab: "Buat Konten" dan "Buat Promosi"
     - ContentForm / PromoForm → ContentVariantCard hasil → ContentPreview → tombol Post/Save Draft
     - Tampilkan progress bot_progress via `useBotProgress` (Requirements 2.10)
     - Warn + tawarkan split thread jika > 3.000 karakter (Requirements 10.4)
     - _Requirements: 2.1–2.11, 3.1–3.7, 10.1–10.6_
-  - [~] 22.4 Buat `frontend/src/pages/engage.tsx` — halaman Engage (Module C)
+  - [x] 22.4 Buat `frontend/src/pages/engage.tsx` — halaman Engage (Module C)
 
     - Tombol Start/Stop sesi, konfigurasi filter topik
     - Live log stream via WebSocket
     - Tabel interaksi terakhir
     - _Requirements: 4.1–4.10_
-  - [~] 22.5 Buat `frontend/src/pages/jobs.tsx` — halaman Job Hunter (Module D)
+  - [x] 22.5 Buat `frontend/src/pages/jobs.tsx` — halaman Job Hunter (Module D)
 
     - JobCriteriaForm + daftar JobCard hasil
     - Statistik breakdown status (Requirements 5.10)
     - Tabel job_applications dengan filter
     - _Requirements: 5.1–5.10_
-  - [~] 22.6 Buat `frontend/src/pages/schedule.tsx` — halaman Penjadwalan
+  - [x] 22.6 Buat `frontend/src/pages/schedule.tsx` — halaman Penjadwalan
 
     - Kalender visual dengan jadwal aktif berwarna (Requirements 6.5)
     - Tabel jadwal + ScheduleForm modal untuk tambah/edit
     - _Requirements: 6.1–6.7_
-  - [~] 22.7 Buat `frontend/src/pages/history.tsx` — halaman History & Logs
+  - [x] 22.7 Buat `frontend/src/pages/history.tsx` — halaman History & Logs
 
     - LogTable dengan filter status, action_type, date range
     - Modal detail log dengan screenshot preview dan stack trace
@@ -409,44 +409,44 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
     - Tampilkan updated_at timestamp (Requirements 12.5)
     - Validasi sisi client sebelum submit, tampilkan field error dari 422 response (Requirements 12.3)
     - _Requirements: 12.1–12.5_
-  - [~] 22.9 Buat `frontend/src/lib/api.ts` — typed API client
+  - [x] 22.9 Buat `frontend/src/lib/api.ts` — typed API client
 
     - Fungsi fetch untuk setiap endpoint backend dengan TypeScript types
     - Handle error dan 422 validation error response
     - _Requirements: semua API_
-- [ ] 23. Checkpoint — Frontend Selesai
+- [x] 23. Checkpoint — Frontend Selesai
 
   - Pastikan semua halaman dapat dirender tanpa error di browser, semua API call terkoneksi.
   - Tanya user jika ada pertanyaan.
 - [X] 24. Testing — Unit & Property Tests Backend
 
-  - [~] 24.1 Tulis unit test untuk `anti_ban.py` — semua metode
+  - [ ] 24.1 Tulis unit test untuk `anti_ban.py` — semua metode
     - Test: `check_daily_limit` return False setelah batas tercapai
     - Test: `detect_captcha` mendeteksi screenshot dengan teks CAPTCHA
     - _Requirements: 9.1–9.7_
-  - [~] 24.2 Tulis unit test untuk `csv_exporter.py`
+  - [ ] 24.2 Tulis unit test untuk `csv_exporter.py`
     - Test: output UTF-8 BOM, baris header, data row count sesuai filter
     - _Requirements: 11.1–11.4_
-  - [~] 24.3 Tulis unit test untuk `settings` router — validasi input
+  - [ ] 24.3 Tulis unit test untuk `settings` router — validasi input
     - Test: kirim batas harian negatif → 422 dengan pesan spesifik
     - Test: delay min > max → 422 dengan pesan spesifik
     - _Requirements: 12.2, 12.3_
-  - [~] 24.4 Tulis unit test untuk `scheduler_service.py`
+  - [ ] 24.4 Tulis unit test untuk `scheduler_service.py`
     - Test: toggle aktif → nonaktif → aktif, next_run dihitung dari sekarang
     - Test: retry logic 3x saat HP disconnect
     - _Requirements: 6.4, 6.6, 6.7_
-- [ ] 25. Integrasi & Polish
+- [x] 25. Integrasi & Polish
 
-  - [~] 25.1 Tambahkan environment variable documentation di `README.md`
+  - [x] 25.1 Tambahkan environment variable documentation di `README.md`
     - Semua env vars yang diperlukan dengan contoh nilai
-  - [~] 25.2 Buat `backend/app/core/exceptions.py` — custom exception handlers untuk FastAPI
+  - [x] 25.2 Buat `backend/app/core/exceptions.py` — custom exception handlers untuk FastAPI
     - Handler untuk `ADBTimeoutError`, `AllProvidersExhaustedError`, `OCRInsufficientTextError`
     - Return JSON error response yang konsisten dengan format `{detail, field}`
     - _Requirements: 1.4, 8.4, 12.3_
-  - [~] 25.3 Tambahkan static file serving untuk screenshots di `main.py`
+  - [x] 25.3 Tambahkan static file serving untuk screenshots di `main.py`
     - Mount `/static` directory untuk serve screenshot images ke frontend
     - _Requirements: 7.2, 7.4_
-  - [~] 25.4 Verifikasi semua property test pass dan task selesai
+  - [x] 25.4 Verifikasi semua property test pass dan task selesai
     - Jalankan semua test: `pytest backend/tests/ -v`
     - Tanya user jika ada pertanyaan atau penyesuaian yang diperlukan.
 

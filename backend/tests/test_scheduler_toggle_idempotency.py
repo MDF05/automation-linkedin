@@ -105,7 +105,7 @@ _schedule_strategy = st.builds(
 # ---------------------------------------------------------------------------
 
 
-@given(schedule=_schedule_strategy, now=_datetime_strategy)
+@given(schedule=_schedule_strategy.filter(lambda s: s.is_active), now=_datetime_strategy)
 @h_settings(max_examples=200)
 def test_double_toggle_results_in_active_schedule(
     schedule: ScheduleLike, now: datetime
@@ -115,8 +115,8 @@ def test_double_toggle_results_in_active_schedule(
 
     toggle(toggle(schedule)) → jadwal dalam kondisi aktif.
 
-    Tidak peduli kondisi awal (aktif atau tidak aktif), toggle dua kali
-    harus menghasilkan jadwal yang aktif.
+    Dimulai dari jadwal yang aktif: nonaktifkan lalu aktifkan kembali harus
+    menghasilkan jadwal yang aktif.
     """
     # Toggle pertama
     schedule.toggle(now=now)

@@ -93,10 +93,10 @@ def filter_jobs(jobs: List[Job], criteria: SearchCriteria) -> List[Job]:
             if job.job_type.lower() != criteria.job_type.lower():
                 continue
 
-        # Filter by skills
+        # Filter by skills — ALL specified skills must be present (AND logic)
         if criteria.skills:
             job_skills_lower = {s.lower() for s in job.skills}
-            skill_match = any(s.lower() in job_skills_lower for s in criteria.skills)
+            skill_match = all(s.lower() in job_skills_lower for s in criteria.skills)
             if not skill_match:
                 continue
 

@@ -138,6 +138,10 @@ def create_app() -> FastAPI:
     application.include_router(settings_router.router, prefix=prefix)
     application.include_router(ws.router)  # WebSocket — no /api prefix
 
+    # ── Exception handlers ────────────────────────────────────────────
+    from app.core.exceptions import register_exception_handlers
+    register_exception_handlers(application)
+
     # ── Static files (screenshots) ────────────────────────────────────
     import os
     screenshots_dir = settings.screenshots_dir
