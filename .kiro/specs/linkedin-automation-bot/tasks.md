@@ -420,18 +420,18 @@ Stack: Python 3.11 + FastAPI (backend), Next.js 14 + TypeScript (frontend), Post
   - Tanya user jika ada pertanyaan.
 - [X] 24. Testing — Unit & Property Tests Backend
 
-  - [ ] 24.1 Tulis unit test untuk `anti_ban.py` — semua metode
+  - [x] 24.1 Tulis unit test untuk `anti_ban.py` — semua metode
     - Test: `check_daily_limit` return False setelah batas tercapai
     - Test: `detect_captcha` mendeteksi screenshot dengan teks CAPTCHA
     - _Requirements: 9.1–9.7_
-  - [ ] 24.2 Tulis unit test untuk `csv_exporter.py`
+  - [x] 24.2 Tulis unit test untuk `csv_exporter.py`
     - Test: output UTF-8 BOM, baris header, data row count sesuai filter
     - _Requirements: 11.1–11.4_
-  - [ ] 24.3 Tulis unit test untuk `settings` router — validasi input
+  - [x] 24.3 Tulis unit test untuk `settings` router — validasi input
     - Test: kirim batas harian negatif → 422 dengan pesan spesifik
     - Test: delay min > max → 422 dengan pesan spesifik
     - _Requirements: 12.2, 12.3_
-  - [ ] 24.4 Tulis unit test untuk `scheduler_service.py`
+  - [x] 24.4 Tulis unit test untuk `scheduler_service.py`
     - Test: toggle aktif → nonaktif → aktif, next_run dihitung dari sekarang
     - Test: retry logic 3x saat HP disconnect
     - _Requirements: 6.4, 6.6, 6.7_

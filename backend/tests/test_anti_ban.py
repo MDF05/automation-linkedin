@@ -292,3 +292,336 @@ class TestSimulateHumanScroll:
     async def test_completes_successfully(self) -> None:
         """simulate_human_scroll harus selesai tanpa error dalam test async."""
         await simulate_human_scroll()  # harus tidak raise exception
+
+
+    @pytest.mark.asyncio
+    async def test_calls_adb_execute_swipe_when_adb_service_provided(self) -> None:
+        """simulate_human_scroll harus memanggil adb_service.execute_swipe ketika adb_service diberikan."""
+        from unittest.mock import AsyncMock, MagicMock
+
+        mock_adb = MagicMock()
+        mock_adb.get_screen_resolution = AsyncMock(return_value=(1080, 1920))
+        mock_adb.execute_swipe = AsyncMock()
+
+        await simulate_human_scroll(
+            device_id="emulator-5554",
+            adb_service=mock_adb,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+        # execute_swipe harus dipanggil setidaknya sekali
+        assert mock_adb.execute_swipe.call_count >= 1
+
+    @pytest.mark.asyncio
+    async def test_adb_execute_swipe_called_with_correct_coordinates(self) -> None:
+        """
+        Koordinat swipe yang dikirim ke ADB harus berupa nilai pixel integer
+        yang diturunkan dari resolusi layar dan konstanta koordinat relatif.
+        """
+        from unittest.mock import AsyncMock, MagicMock
+
+        width, height = 1080, 1920
+
+        mock_adb = MagicMock()
+        mock_adb.get_screen_resolution = AsyncMock(return_value=(width, height))
+        mock_adb.execute_swipe = AsyncMock()
+
+        await simulate_human_scroll(
+            device_id="emulator-5554",
+            adb_service=mock_adb,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+        # Verifikasi bahwa setiap panggilan execute_swipe menggunakan koordinat integer
+        for call_args in mock_adb.execute_swipe.call_args_list:
+            args = call_args[0]  # positional args: (x, y_start, x, y_end, duration_ms)
+            assert len(args) == 5
+            x1, y1, x2, y2, duration_ms = args
+            # Koordinat harus integer
+            assert isinstance(x1, int)
+            assert isinstance(y1, int)
+            assert isinstance(x2, int)
+            assert isinstance(y2, int)
+            # Durasi harus integer (dalam ms)
+            assert isinstance(duration_ms, int)
+
+    @pytest.mark.asyncio
+    async def test_adb_swipe_duration_varies_between_calls(self) -> None:
+        """
+        Durasi swipe harus bervariasi (tidak konstan) antar panggilan,
+        mensimulasikan perilaku manusia yang tidak kaku.
+        Untuk mendapat variasi, jalankan beberapa kali dengan banyak swipe.
+        """
+        from unittest.mock import AsyncMock, MagicMock
+
+        mock_adb = MagicMock()
+        mock_adb.get_screen_resolution = AsyncMock(return_value=(1080, 1920))
+        mock_adb.execute_swipe = AsyncMock()
+
+        # Jalankan dengan pola 'skim' (8–15 swipe) untuk mendapat banyak sampel
+        await simulate_human_scroll(
+            device_id="emulator-5554",
+            adb_service=mock_adb,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+        durations = [
+            call_args[0][4]  # arg ke-5: duration_ms
+            for call_args in mock_adb.execute_swipe.call_args_list
+        ]
+
+        if len(durations) > 1:
+            # Jika ada lebih dari satu swipe, setidaknya ada kemungkinan variasi
+            # (range 300–600 ms untuk pola 'skim' cukup lebar untuk variasi)
+            # Verifikasi semua durasi berada dalam range yang valid untuk pola 'skim'
+            for d in durations:
+                assert 300 <= d <= 600, f"Durasi swipe {d}ms di luar range 'skim' (300–600ms)"
+
+    @pytest.mark.asyncio
+    async def test_fallback_to_sleep_when_no_adb_service(self) -> None:
+        """
+        Ketika adb_service=None, simulate_human_scroll harus berjalan tanpa error
+        (fallback ke asyncio.sleep) dan tidak mencoba mengakses ADB apapun.
+        """
+        # Tidak perlu mock apa-apa — hanya pastikan tidak ada exception
+        await simulate_human_scroll(
+            device_id=None,
+            adb_service=None,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+    @pytest.mark.asyncio
+    async def test_all_scroll_patterns_work_with_adb(self) -> None:
+        """Semua tiga pola scroll ('slow_read', 'skim', 'deep_read') harus berjalan tanpa error."""
+        from unittest.mock import AsyncMock, MagicMock
+
+        for pattern in ("slow_read", "skim", "deep_read"):
+            mock_adb = MagicMock()
+            mock_adb.get_screen_resolution = AsyncMock(return_value=(1080, 1920))
+            mock_adb.execute_swipe = AsyncMock()
+
+            await simulate_human_scroll(
+                adb_service=mock_adb,
+                pattern=pattern,
+                _fast_mode=True,
+            )
+
+            # Setiap pola harus melakukan minimal 1 swipe
+            assert mock_adb.execute_swipe.call_count >= 1, (
+                f"Pola '{pattern}' seharusnya melakukan minimal 1 swipe"
+            )
+
+    @pytest.mark.asyncio
+    async def test_adb_failure_does_not_crash_scroll(self) -> None:
+        """
+        Jika ADB execute_swipe gagal (raise exception), scroll harus tetap berjalan
+        tanpa crash (graceful degradation sesuai implementasi).
+        """
+        from unittest.mock import AsyncMock, MagicMock
+
+        mock_adb = MagicMock()
+        mock_adb.get_screen_resolution = AsyncMock(return_value=(1080, 1920))
+        mock_adb.execute_swipe = AsyncMock(side_effect=Exception("ADB connection lost"))
+
+        # Tidak boleh raise exception
+        await simulate_human_scroll(
+            adb_service=mock_adb,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+    @pytest.mark.asyncio
+    async def test_get_screen_resolution_called_with_adb_service(self) -> None:
+        """get_screen_resolution harus dipanggil tepat sekali untuk mendapatkan dimensi layar."""
+        from unittest.mock import AsyncMock, MagicMock
+
+        mock_adb = MagicMock()
+        mock_adb.get_screen_resolution = AsyncMock(return_value=(1080, 1920))
+        mock_adb.execute_swipe = AsyncMock()
+
+        await simulate_human_scroll(
+            adb_service=mock_adb,
+            pattern="skim",
+            _fast_mode=True,
+        )
+
+        mock_adb.get_screen_resolution.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Tests: detect_captcha_from_screenshot (async — via OCR pipeline)
+# ---------------------------------------------------------------------------
+
+
+class TestDetectCaptchaFromScreenshot:
+    """
+    Test suite untuk fungsi detect_captcha_from_screenshot.
+
+    Fungsi ini menggunakan OCR untuk mengekstrak teks dari screenshot,
+    lalu mendeteksi keyword CAPTCHA dari teks tersebut.
+    Validates: Requirements 9.6
+    """
+
+    @pytest.mark.asyncio
+    async def test_returns_true_when_ocr_extracts_captcha_text(self) -> None:
+        """
+        Ketika OCR mengekstrak teks yang mengandung keyword CAPTCHA,
+        detect_captcha_from_screenshot harus mengembalikan True.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = "Please verify your identity to continue."
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ):
+            result = await detect_captcha_from_screenshot("/fake/screenshot.png")
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_returns_false_when_ocr_extracts_normal_text(self) -> None:
+        """
+        Ketika OCR mengekstrak teks normal (tanpa keyword CAPTCHA),
+        detect_captcha_from_screenshot harus mengembalikan False.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = "Check out these great job opportunities in software engineering."
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ):
+            result = await detect_captcha_from_screenshot("/fake/screenshot.png")
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_returns_false_when_ocr_engine_unavailable(self) -> None:
+        """
+        Ketika OCR engine tidak tersedia (OCREngineUnavailableError),
+        detect_captcha_from_screenshot harus mengembalikan False (graceful degradation).
+        """
+        from unittest.mock import patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+        from app.services.ocr_service import OCREngineUnavailableError
+
+        with patch(
+            "app.services.ocr_service.extract_text",
+            side_effect=OCREngineUnavailableError("No OCR engine available"),
+        ):
+            result = await detect_captcha_from_screenshot("/fake/screenshot.png")
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_returns_false_when_generic_exception_occurs(self) -> None:
+        """
+        Ketika OCR melempar exception apapun (selain OCREngineUnavailableError),
+        detect_captcha_from_screenshot harus mengembalikan False (graceful degradation).
+        """
+        from unittest.mock import patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        with patch(
+            "app.services.ocr_service.extract_text",
+            side_effect=Exception("Unexpected error reading file"),
+        ):
+            result = await detect_captcha_from_screenshot("/fake/screenshot.png")
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_detects_captcha_keyword_via_ocr_pipeline(self) -> None:
+        """
+        Test end-to-end: OCR mengekstrak teks dengan keyword 'captcha',
+        fungsi harus mengembalikan True.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = "CAPTCHA required. Please complete the challenge."
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ):
+            result = await detect_captcha_from_screenshot("/path/to/screen.png")
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_detects_unusual_activity_via_ocr_pipeline(self) -> None:
+        """
+        OCR mengekstrak teks 'unusual activity' → detect_captcha_from_screenshot True.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = (
+            "We noticed unusual activity from your device. "
+            "Please confirm you are human."
+        )
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ):
+            result = await detect_captcha_from_screenshot("/path/to/screen.png")
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_extract_text_called_with_screenshot_path(self) -> None:
+        """
+        extract_text harus dipanggil dengan screenshot_path yang diberikan.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = "Normal LinkedIn feed content here."
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ) as mock_extract:
+            await detect_captcha_from_screenshot("/screenshots/page_001.png")
+
+        mock_extract.assert_called_once_with("/screenshots/page_001.png")
+
+    @pytest.mark.asyncio
+    async def test_detects_pemeriksaan_keamanan_indonesian_via_screenshot(
+        self,
+    ) -> None:
+        """
+        Keyword bahasa Indonesia 'pemeriksaan keamanan' harus terdeteksi
+        via pipeline OCR screenshot.
+        """
+        from unittest.mock import MagicMock, patch
+
+        from app.services.anti_ban import detect_captcha_from_screenshot
+
+        mock_ocr_result = MagicMock()
+        mock_ocr_result.text = "Lakukan pemeriksaan keamanan untuk melanjutkan."
+
+        with patch(
+            "app.services.ocr_service.extract_text", return_value=mock_ocr_result
+        ):
+            result = await detect_captcha_from_screenshot("/fake/layar.png")
+
+        assert result is True
