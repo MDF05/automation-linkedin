@@ -1,6 +1,6 @@
-[submodule "frontend-automation-linkedin"]
+[submodule "frontend"]
 	path = frontend
 	url = https://github.com/MDF05/frontend-linkedin-automation.git
-[submodule "backend-automation-linkedin"]
-	path = backend
+[submodule "backend"]
+	path = backend-asu
 	url = https://github.com/MDF05/backend-automation-linkedin.git
