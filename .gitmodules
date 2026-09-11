@@ -1,9 +1,9 @@
 [submodule "frontend-automation-linkedin"]
-    path = frontend/ 
+    path = frontend
     url = https://github.com/MDF05/frontend-linkedin-automation.git
     branch = main
 
 [submodule "backend-automation-linkedin"]
-    path = backend/ 
+    path = backend 
     url = https://github.com/MDF05/frontend-linkedin-automation.git
     branch = main
