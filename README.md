@@ -674,3 +674,5 @@ Phase 6 — Polish
 - **AI Free Tier**: monitor usage via tabel `ai_usage` agar tidak melebihi limit
 - **CV Template**: siapkan template CV yang bisa diisi otomatis untuk module job apply
 - **Screenshot logging**: setiap aksi bot disertai screenshot untuk audit trail
+#   a u t o m a t i o n - l i n k e d i n  
+ 
