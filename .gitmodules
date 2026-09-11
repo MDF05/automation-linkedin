@@ -1,0 +1,4 @@
+[submodule "frontend-automation-linkedin"]
+    path = frontend/ 
+    url = https://github.com/MDF05/frontend-linkedin-automation.git
+    branch = main
